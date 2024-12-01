@@ -6,8 +6,8 @@ fn split_lists(input: &str) -> (Vec<u32>, Vec<u32>) {
 
 pub fn part_one(input: &str) -> Option<u32> {
     let (mut left, mut right) = split_lists(input);
-    left.sort();
-    right.sort();
+    left.sort_unstable();
+    right.sort_unstable();
     Some(left.into_iter().zip(right.into_iter()).map(|(l, r)| l.abs_diff(r)).sum())
 }
 
