@@ -1,33 +1,126 @@
-use regex::Regex;
-
 advent_of_code::solution!(3);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let pattern = Regex::new("mul\\((\\d{1,3}),(\\d{1,3})\\)").unwrap();
+    let mut iter = input.chars();
     let mut result = 0;
-    for caps in pattern.captures_iter(input) {
-        result += caps[1].parse::<u32>().unwrap() * caps[2].parse::<u32>().unwrap();
+    'outer: while let Some(c) = iter.next() {
+        if c != 'm' {continue;}
+        if iter.next() != Some('u') {continue;}
+        if iter.next() != Some('l') {continue;}
+        if iter.next() != Some('(') {continue;}
+        let mut counter = 0;
+        let mut num = 0;
+        while counter < 4 {
+            if let Some(c) = iter.next() {
+                if c == ',' && counter != 0 {
+                    break;
+                }
+                counter += 1;
+                if !c.is_digit(10) {
+                    continue 'outer;
+                }
+                num = num * 10 + (c as u32 - '0' as u32);
+            } else {
+                break 'outer;
+            }
+        }
+        counter = 0;
+        let mut num2 = 0;
+        while counter < 4 {
+            if let Some(c) = iter.next() {
+                if c == ')' && counter != 0 {
+                    break;
+                }
+                counter += 1;
+                if !c.is_digit(10) {
+                    continue 'outer;
+                }
+                num2 = num2 * 10 + (c as u32 - '0' as u32);
+            } else {
+                break 'outer;
+            }
+        }
+        result += num * num2;
     }
     Some(result)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let pattern = Regex::new("mul\\((\\d{1,3}),(\\d{1,3})\\)|do(?:n't)?\\(\\)").unwrap();
+    let mut iter = input.chars().peekable();
     let mut result = 0;
     let mut enabled = true;
-    for caps in pattern.captures_iter(input) {
-        if &caps[0] == "do()" {
-            enabled = true;
-            continue;
+    'outer: while let Some(c) = iter.next() {
+        if c == 'd' {
+            if iter.peek() != Some(&'o') {continue;}
+            iter.next();
+            match iter.peek() {
+                Some(&'(') => {
+                    iter.next();
+                    if iter.peek() != Some(&')') {continue;}
+                    iter.next();
+                    enabled = true;
+                }
+                Some(&'n') => {
+                    iter.next();
+                    if iter.peek() != Some(&'\'') {continue;}
+                    iter.next();
+                    if iter.peek() != Some(&'t') {continue;}
+                    iter.next();
+                    if iter.peek() != Some(&'(') {continue;}
+                    iter.next();
+                    if iter.peek() != Some(&')') {continue;}
+                    iter.next();
+                    enabled = false;
+                }
+                _ => continue
+            }
         }
-        if &caps[0] == "don't()" {
-            enabled = false;
-            continue;
+        if c != 'm' {continue;}
+        if iter.peek() != Some(&'u') {continue;}
+        iter.next();
+        if iter.peek() != Some(&'l') {continue;}
+        iter.next();
+        if iter.peek() != Some(&'(') {continue;}
+        iter.next();
+        let mut counter = 0;
+        let mut num = 0;
+        while counter < 4 {
+            if let Some(&c) = iter.peek() {
+                if c == ',' && counter != 0 {
+                    iter.next();
+                    break;
+                }
+                counter += 1;
+                if !c.is_digit(10) {
+                    continue 'outer;
+                }
+                iter.next();
+                num = num * 10 + (c as u32 - '0' as u32);
+            } else {
+                break 'outer;
+            }
         }
-        if !enabled {
-            continue;
+        counter = 0;
+        let mut num2 = 0;
+        while counter < 4 {
+            if let Some(&c) = iter.peek() {
+                if c == ')' && counter != 0 {
+                    iter.next();
+                    break;
+                }
+                counter += 1;
+                if !c.is_digit(10) {
+                    continue 'outer;
+                }
+                iter.next();
+                num2 = num2 * 10 + (c as u32 - '0' as u32);
+            } else {
+                break 'outer;
+            }
         }
-        result += caps[1].parse::<u32>().unwrap() * caps[2].parse::<u32>().unwrap();
+        if enabled {
+            result += num * num2;
+        }
     }
     Some(result)
 }
