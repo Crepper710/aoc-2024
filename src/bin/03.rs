@@ -75,6 +75,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 _ => continue
             }
         }
+        if !enabled {continue;}
         if c != 'm' {continue;}
         if iter.peek() != Some(&'u') {continue;}
         iter.next();
@@ -118,9 +119,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 break 'outer;
             }
         }
-        if enabled {
-            result += num * num2;
-        }
+        result += num * num2;
     }
     Some(result)
 }
