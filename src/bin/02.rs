@@ -2,8 +2,8 @@ use std::{i8, ops::Sub, u32};
 
 advent_of_code::solution!(2);
 
-fn parse(input: &str) -> Vec<Vec<i8>> {
-    input.lines().map(|s| s.split(' ').map(|s| s.parse::<i8>().unwrap()).collect()).collect()
+fn parse(input: &str) -> impl Iterator<Item = Vec<i8>> + '_ {
+    input.lines().map(|s| s.split(' ').map(|s| s.parse::<i8>().unwrap()).collect())
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -35,7 +35,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut total = 0;
     for report in reports {
         'outer: for j in 0..report.len() {
-            let report = report.iter().cloned().enumerate().filter_map(|(i, v)| if i == j {None} else {Some(v)}).collect::<Vec<_>>();
+            let mut report = report.clone();
+            report.remove(j);
             let diff = report[1] - report[0];
             let bounds = if diff >= -3 && diff <= -1 {
                 (-3, -1)
