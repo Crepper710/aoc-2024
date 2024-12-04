@@ -1,63 +1,74 @@
 advent_of_code::solution!(4);
 
-fn parse_input(input: &str) -> Vec<Vec<char>> {
+fn parse_input(input: &str) -> Box<[Box<[char]>]> {
     input.lines().map(|s| s.chars().collect()).collect()
-}
-
-// 1 1 1  1 2 3  3 2 1
-// 2 2 2  2 3      3 2
-// 3 3 3  3          3
-//
-// 1 2 3  3          3
-// 1 2 3  2 3      3 2
-// 1 2 3  1 2 3  3 2 1
-
-macro_rules! do_check {
-    ($c:expr, $buffer:expr, $total:expr) => {
-        match ($c, $buffer) {
-            ('S', 3) => {
-                $buffer = -1;
-                $total += 1;
-            },
-            ('X', -3) => {
-                $buffer = 1;
-                $total += 1;
-            },
-            ('A', 2) => $buffer = 3,
-            ('M', -2) => $buffer = -3,
-            ('M', 1) => $buffer = 2,
-            ('A', -1) => $buffer = -2,
-            ('X', _) => $buffer = 1,
-            ('S', _) => $buffer = -1,
-            _ => $buffer = 0,
-        }
-    };
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
     let field = parse_input(input);
     let len = field.len();
-    let max_i = len - 1;
     let mut total = 0;
-    for i in 0..len {
-        let mut buffer = (0, 0);
-        for j in 0..len {
-            do_check!(field[j][i], buffer.0, total); // vertical
-            do_check!(field[i][j], buffer.1, total); // horizontal
+    let len_ = len - 4;
+    for y in 0..len {
+        for x in 0..len {
+            if field[y][x] != 'X' {continue;}
+            'block: { // right
+                if x > len_ {break 'block;}
+                if field[y][x + 1] != 'M' {break 'block;}
+                if field[y][x + 2] != 'A' {break 'block;}
+                if field[y][x + 3] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // left
+                if x < 3 {break 'block;}
+                if field[y][x - 1] != 'M' {break 'block;}
+                if field[y][x - 2] != 'A' {break 'block;}
+                if field[y][x - 3] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // bottom
+                if y > len_ {break 'block;}
+                if field[y + 1][x] != 'M' {break 'block;}
+                if field[y + 2][x] != 'A' {break 'block;}
+                if field[y + 3][x] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // right
+                if y < 3 {break 'block;}
+                if field[y - 1][x] != 'M' {break 'block;}
+                if field[y - 2][x] != 'A' {break 'block;}
+                if field[y - 3][x] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // bottom right
+                if x > len_ || y > len_ {break 'block;}
+                if field[y + 1][x + 1] != 'M' {break 'block;}
+                if field[y + 2][x + 2] != 'A' {break 'block;}
+                if field[y + 3][x + 3] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // top right
+                if x > len_ || y < 3 {break 'block;}
+                if field[y - 1][x + 1] != 'M' {break 'block;}
+                if field[y - 2][x + 2] != 'A' {break 'block;}
+                if field[y - 3][x + 3] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // bottom left
+                if x < 3 || y > len_ {break 'block;}
+                if field[y + 1][x - 1] != 'M' {break 'block;}
+                if field[y + 2][x - 2] != 'A' {break 'block;}
+                if field[y + 3][x - 3] != 'S' {break 'block;}
+                total += 1;
+            }
+            'block: { // top right
+                if x < 3 || y < 3 {break 'block;}
+                if field[y - 1][x - 1] != 'M' {break 'block;}
+                if field[y - 2][x - 2] != 'A' {break 'block;}
+                if field[y - 3][x - 3] != 'S' {break 'block;}
+                total += 1;
+            }
         }
-        if i < 3 {continue;}
-        let mut buffer = (0, 0, 0, 0);
-        for j in 0..=i {
-            let x = i - j;
-            let y = j;
-            // print!("{x} {y}   ");
-            do_check!(field[y][x], buffer.0, total); // start = top left
-            do_check!(field[y][max_i - x], buffer.1, total); // start = top right
-            if i == max_i {continue;}
-            do_check!(field[max_i - y][x], buffer.2, total); // start = bottom left
-            do_check!(field[max_i - y][max_i - x], buffer.3, total); // start = bottom right
-        }
-        // println!();
     }
     Some(total)
 }
