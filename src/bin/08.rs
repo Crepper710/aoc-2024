@@ -22,10 +22,17 @@ pub fn part_one(input: &str) -> Option<usize> {
     let mut antinodes = HashSet::new();
     for locations in antennas.clone().values() {
         for pair in locations.into_iter().permutations(2) {
-            antinodes.insert(((pair[0].0 * 2).checked_sub(pair[1].0), (pair[0].1 * 2).checked_sub(pair[1].1)));
+            let (x_1, y_1) = pair[0];
+            let (x_2, y_2) = pair[1];
+            let x_step = x_1.wrapping_sub(*x_2);
+            let y_step = y_1.wrapping_sub(*y_2);
+            let x = x_1.wrapping_add(x_step);
+            let y = y_1.wrapping_add(y_step);
+            if x >= len || y >= len {continue;}
+            antinodes.insert((x, y));
         }
     }
-    Some(antinodes.into_iter().filter(|pos| if let (Some(x), Some(y)) = pos {*x < len && *y < len} else {false}).count())
+    Some(antinodes.len())
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
