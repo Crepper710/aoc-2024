@@ -4,9 +4,7 @@ use ilog::IntLog;
 
 advent_of_code::solution!(11);
 
-type Num = u128;
-
-fn recur_count_blinks(num: Num, steps: usize, cache: &mut HashMap<(Num, usize), Num>) -> Num {
+fn recur_count_blinks(num: u64, steps: usize, cache: &mut HashMap<(u64, usize), u64>) -> u64 {
     if steps == 0 {
         return 1;
     }
@@ -18,7 +16,7 @@ fn recur_count_blinks(num: Num, steps: usize, cache: &mut HashMap<(Num, usize), 
     } else {
         let log = num.log10() as u32 + 1;
         if log & 1 == 0 {
-            let split = (10 as Num).pow(log / 2);
+            let split = 10u64.pow(log / 2);
             recur_count_blinks(num / split, steps - 1, cache) + recur_count_blinks(num % split, steps - 1, cache)
         } else {
             recur_count_blinks(num * 2024, steps - 1, cache)
@@ -28,11 +26,11 @@ fn recur_count_blinks(num: Num, steps: usize, cache: &mut HashMap<(Num, usize), 
     return result;
 }
 
-fn parse_input(input: &str) -> Vec<Num> {
-    input.trim().split(' ').map(|s| s.parse::<Num>().unwrap()).collect()
+fn parse_input(input: &str) -> Vec<u64> {
+    input.trim().split(' ').map(|s| s.parse::<u64>().unwrap()).collect()
 }
 
-pub fn part_one(input: &str) -> Option<Num> {
+pub fn part_one(input: &str) -> Option<u64> {
     let stones = parse_input(input);
     let mut cache = HashMap::new();
     let mut total = 0;
@@ -42,7 +40,7 @@ pub fn part_one(input: &str) -> Option<Num> {
     Some(total)
 }
 
-pub fn part_two(input: &str) -> Option<Num> {
+pub fn part_two(input: &str) -> Option<u64> {
     let stones = parse_input(input);
     let mut cache = HashMap::new();
     let mut total = 0;
@@ -65,6 +63,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(65601038650482));
     }
 }
