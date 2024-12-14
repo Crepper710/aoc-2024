@@ -77,7 +77,6 @@ pub fn part_two(input: &str) -> Option<isize> {
         robots.iter_mut().for_each(|r| r.step_once_mut((101, 103)));
         let x_variance = variance(robots.iter().map(|r| r.pos.0).collect());
         let y_variance = variance(robots.iter().map(|r| r.pos.1).collect());
-        //println!("{i} {} {}", x_variance, y_variance);
         if x_variance < min_x_variance {
             min_x_variance = x_variance;
             best_x = i;
@@ -87,7 +86,6 @@ pub fn part_two(input: &str) -> Option<isize> {
             best_y = i;
         }
     }
-    //println!("{x}: {max_x_variance} {y}: {max_y_variance}");
     Some((best_x + 51 * (best_y - best_x) * 101).rem_euclid(101 * 103) + 1)
 }
 
